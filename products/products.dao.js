@@ -5,7 +5,7 @@ const Product = require('./products.entity');
   saveProduct should be a function that calls the save() function on Products Model 
   to persist products data in MongoDB Products collection of shoppingcartDB
 */
-const saveProduct = (productData, callback) => {
+const saveProduct = (productData, done) => {
   const newProduct = new Product({
     ...productData,
     ProductId: uuidv4(),
@@ -13,9 +13,9 @@ const saveProduct = (productData, callback) => {
 
   newProduct.save((error, savedProduct) => {
     if (error) {
-      callback(error, null);
+      done(error, null);
     } else {
-      callback(null, savedProduct);
+      done(null, savedProduct);
     }
   });
 };
@@ -24,12 +24,12 @@ const saveProduct = (productData, callback) => {
   getProductById should be a function that calls the findOne() function on Products Model 
   to fetch the Product document by provided Id from the Products collection of shoppingcartDB
 */
-const getProductById = (productId, callback) => {
+const getProductById = (productId, done) => {
   Product.findOne({ ProductId: productId }, (error, product) => {
     if (error) {
-      callback(error, null);
+      done(error, null);
     } else {
-      callback(null, product);
+      done(null, product);
     }
   });
 };
@@ -40,12 +40,12 @@ const getProductById = (productId, callback) => {
   The function should fetch all documents that match the criteria from Products 
   collection of shoppingcartDB
 */
-const findProductsByQuery = (query, callback) => {
+const findProductsByQuery = (query, done) => {
   Product.find(query, (error, products) => {
     if (error) {
-      callback(error, null);
+      done(error, null);
     } else {
-      callback(null, products);
+      done(null, products);
     }
   });
 };
@@ -54,16 +54,16 @@ const findProductsByQuery = (query, callback) => {
   updateProductDetails should be a function that calls the findOneAndUpdate() 
   function on Products Model that fetches product by id from Products collection of shoppingcartDB and updates it
 */
-const updateProductDetails = (productId, updatedata, callback) => {
+const updateProductDetails = (productId, updatedata, done) => {
   Product.findOneAndUpdate(
     { ProductId: productId },
     updatedata,
     { new: true },
     (error, updatedProduct) => {
       if (error) {
-        callback(error, null);
+        done(error, null);
       } else {
-        callback(null, updatedProduct);
+        done(null, updatedProduct);
       }
     }
   );
