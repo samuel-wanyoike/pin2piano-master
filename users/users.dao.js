@@ -1,34 +1,37 @@
 const { v4: uuidv4 } = require("uuid");
 const User = require('./users.entity');
+
 /* 
   saveUser should be a function that calls the save() function on Users Model 
   to persist user data in MongoDB Users collection of shoppingcartDB
 */
-const saveUser = async (userdata) => {
+const saveUser = (userData, done) => {
   const newUser = new User({
-    ...userdata,
+    ...userData,
     UserId: uuidv4(),
   });
 
-  try {
-    const savedUser = await newUser.save();
-    return savedUser;
-  } catch (error){
-    throw new Error('Error saving user: ${error.message}')
-  }
+  newUser.save((error, savedUser) => {
+    if (error) {
+      done(error, null);
+    } else {
+      done(null, savedUser);
+    }
+  });
 };
 
 /* 
   findUsers should be a function that calls the find() function on Users Model 
   to fetch all documents from Users collection of shoppingcartDB
 */
-const findUsers = async () => {
-  try{
-    const users = await User.find();
-    return users;
-  } catch (error){
-    throw new Error(  `error finding users: ${error.message}`)
-  }
+const findUsers = (done) => {
+  User.find({}, (error, users) => {
+    if (error) {
+      done(error, null);
+    } else {
+      done(null, users);
+    }
+  });
 };
 
 /* 
@@ -36,13 +39,14 @@ const findUsers = async () => {
   to fetch User document from Users collection of shoppingcartDB,
   containing data of Users for given email
 */
-const getUserByEmail = async (email) => {
-  try{
-    const user = await User.findOne({Email: email});
-    return user;
-  } catch (error){
-    throw new Error(`error findong user by email: ${error.message}`)
-  }
+const getUserByEmail = (email, done) => {
+  User.findOne({ Email: email }, (error, user) => {
+    if (error) {
+      done(error, null);
+    } else {
+      done(null, user);
+    }
+  });
 };
 
 /* 
@@ -50,31 +54,33 @@ const getUserByEmail = async (email) => {
   to fetch User document from Users collection of shoppingcartDB,
   containing data of Users for given userId
 */
-const getUserById = async (userid) => {
-  try {
-    const user = await User.findOne({UserId: userId});
-    return user;
-
-  } catch (error){
-    throw new Error (`error finding user by ID: ${error.message}`)
-  }
+const getUserById = (userId, done) => {
+  User.findOne({ UserId: userId }, (error, user) => {
+    if (error) {
+      done(error, null);
+    } else {
+      done(null, user);
+    }
+  });
 };
 
 /* 
   updateUserDetails should be a function that calls the findOneAndUpdate() 
   function on Users Model that fetches user by id from Products collection of shoppingcartDB and updates it
 */
-const updateUserDetails = async(userId, updateDate) => {
-  try{
-    const updatedUser = await User.findOneAndUpdate(
-      {UserId : userId},
-      updateData,
-      {new: true}
-    );
-    return updatedUser;
-  } catch (error){
-    throw new Error(`error updating user details: ${error.message}`)
-  }
+const updateUserDetails = (userId, updateData, done) => {
+  User.findOneAndUpdate(
+    { UserId: userId },
+    updateData,
+    { new: true },
+    (error, updatedUser) => {
+      if (error) {
+        done(error, null);
+      } else {
+        done(null, updatedUser);
+      }
+    }
+  );
 };
 
 module.exports = {
@@ -83,4 +89,4 @@ module.exports = {
   getUserByEmail,
   updateUserDetails,
   getUserById
-}
+};

@@ -1,21 +1,26 @@
 const { v4: uuidv4 } = require("uuid");
 const Order = require('./orders.entity');
+const { deleteOne } = require("../users/users.entity");
 /* 
   saveOrder should be a function that calls the save() function on Orders Model 
   to persist order data in MongoDB Orders collection of shoppingcartDB
 */
-const saveOrder = async (orderData) => {
-  const newOrder = new order({
+const saveOrder = (orderData, callback) => {
+  const newOrder = new Order({
     ...orderData,
     OrderId: uuidv4(),
   });
 
-  try{
-    const savedOrder = await newOrder.save();
-    return savedOrder
-  } catch (error){
-    throw new Error(`error saving order: ${error.message}`)
-  }
+  newOrder.save((err, savedOrder) => {
+    if(err){
+      callback(err, null)
+    }
+    else{
+      callback(null, savedOrder)
+    }
+  });
+
+  
 };
 
 
@@ -24,13 +29,14 @@ const saveOrder = async (orderData) => {
   to fetch all documents from Orders collection of shoppingcartDB,
   containing data of Orders for a given UserId
 */
-const findOrdersPlacedByUser = async (userId) => {
-  try{
-    const orders = await Order.find({userId});
-    return orders;
-  } catch (error){
-    throw new Error(`error finding orders for user: ${error.message}`)
-  }
+const findOrdersPlacedByUser = (userId, callback) => {
+  Order.find({ UserId: userId }, (error, orders) => {
+    if (error) {
+      callback(error, null);
+    } else {
+      callback(null, orders);
+    }
+  });
 };
 
 
